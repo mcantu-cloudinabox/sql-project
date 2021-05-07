@@ -1,0 +1,25 @@
+name: PMD Source Code Analyzer on Push
+
+on: [push]
+
+jobs:
+  pmd:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v2
+ 
+      - uses: Moose0621/setup-pmd@v2
+      
+      - name: run-pmd
+        run: |
+          pmd -d . -failOnViolation false -f sarif -R category/plsql/codestyle.xml/AvoidTabCharacter,category/plsql/bestpractices.xml/TomKytesDespair > results.sarif
+          cat results.sarif
+          
+      - name: Upload mobsfscan report
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
